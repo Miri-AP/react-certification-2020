@@ -2,13 +2,13 @@ import styled from 'styled-components';
 
 export const VideoCardWrapper = styled.div`
   height: fit-content;
-  width: 350px;
-  height: 345px;
+  width: ${(props) => props.width};
+  height: ${(props) => props.height};
+  margin: auto;
   box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
     rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
   border-radius: 10px;
   margin-bottom: 30px;
-  cursor: not-allowed;
 
   &:hover {
     box-shadow: rgba(254, 223, 3, 0.12) 0px 2px 4px 0px,

@@ -13,4 +13,26 @@ function getReadableDate(timeStamp) {
   return date.toLocaleDateString(undefined, options);
 }
 
-export { random, getReadableDate };
+function getUsefullData(videoData) {
+  const { videoId } = videoData.id;
+  const {
+    publishedAt,
+    title,
+    channelTitle,
+    description,
+    thumbnails,
+    channelId,
+  } = videoData.snippet;
+  return {
+    uploadDate: getReadableDate(publishedAt),
+    thumbnail: thumbnails.medium.url,
+    title,
+    description,
+    channel: channelTitle,
+    channelId,
+    videoId,
+    link: `https://www.youtube.com/embed/${videoId}?autoplay=1&color=white`,
+  };
+}
+
+export { random, getReadableDate, getUsefullData };

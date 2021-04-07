@@ -36,7 +36,6 @@ export const Search = styled.input`
   border: none;
   border-radius: 3px;
   height: 30px;
-  cursor: not-allowed;
 `;
 
 export const HeaderToggleWrapper = styled.div`

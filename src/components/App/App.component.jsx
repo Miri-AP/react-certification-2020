@@ -1,51 +1,55 @@
-import React, { useLayoutEffect } from 'react';
+import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { useVideList, useVideoInfo } from '../../utils/hooks/useVideoStates';
+import { fetchSearchVideos } from '../../utils/endpoints';
 
 import AuthProvider from '../../providers/Auth';
 import HomePage from '../../pages/Home';
-import LoginPage from '../../pages/Login';
 import NotFound from '../../pages/NotFound';
-import SecretPage from '../../pages/Secret';
-import Private from '../Private';
 import Layout from '../Layout';
+import VideoPlayer from '../../pages/VideoPlayer';
 import HeaderMenu from '../Header';
 
-import { random } from '../../utils/fns';
-
 function App() {
-  useLayoutEffect(() => {
-    const { body } = document;
+  const { videoList, updateVideoList } = useVideList([]);
+  const { video, updateVideoInfo } = useVideoInfo({});
 
-    function rotateBackground() {
-      const xPercent = random(100);
-      const yPercent = random(100);
-      body.style.setProperty('--bg-position', `${xPercent}% ${yPercent}%`);
-    }
+  const doSearch = async (keyword) => {
+    updateVideoInfo({});
+    const search = await fetchSearchVideos(keyword);
+    updateVideoList(search.items);
+    return search;
+  };
 
-    const intervalId = setInterval(rotateBackground, 3000);
-    body.addEventListener('click', rotateBackground);
-
-    return () => {
-      clearInterval(intervalId);
-      body.removeEventListener('click', rotateBackground);
-    };
-  }, []);
+  const selectCard = (videoInfo) => {
+    updateVideoInfo(videoInfo);
+    const path = videoInfo.title ? `?video=${videoInfo.videoId}` : '/';
+    window.history.replaceState({}, videoInfo.title, path);
+  };
 
   return (
-    <BrowserRouter>
-      <HeaderMenu />
+    <BrowserRouter data-testid="app-layout">
+      <HeaderMenu doSearch={doSearch} />
       <AuthProvider>
         <Layout>
           <Switch>
-            <Route exact path="/">
-              <HomePage />
+            <Route path="/">
+              {video.title ? (
+                <VideoPlayer
+                  video={video}
+                  selectCard={selectCard}
+                  relatedVideos={videoList}
+                />
+              ) : (
+                <HomePage videoList={videoList} selectCard={selectCard} />
+              )}
             </Route>
             <Route exact path="/login">
-              <LoginPage />
+              Login
             </Route>
-            <Private exact path="/secret">
-              <SecretPage />
-            </Private>
+            <Route path="/videoplayer">
+              <VideoPlayer video={video} />
+            </Route>
             <Route path="*">
               <NotFound />
             </Route>
